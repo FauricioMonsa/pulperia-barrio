@@ -1,0 +1,94 @@
+@model PulperiaBarrio.Models.ProductoFormularioViewModel
+
+@{
+    var esEdicion = Model.Id != 0;
+    ViewData["Title"] = esEdicion ? "Editar producto" : "Crear producto";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Guardar" method="post">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    <div class="mb-3">
+        <label asp-for="Nombre" class="form-label">Nombre</label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Categoria" class="form-label">Categoría</label>
+        <input asp-for="Categoria" class="form-control" />
+        <span asp-validation-for="Categoria" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Precio" class="form-label">Precio (₡)</label>
+        <input asp-for="Precio" type="number" step="0.01" min="0.01" inputmode="decimal" class="form-control" />
+        <span asp-validation-for="Precio" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MaxCantidadReserva" class="form-label">Máximo por cliente</label>
+        <input asp-for="MaxCantidadReserva" type="number" min="1" class="form-control" />
+        <span asp-validation-for="MaxCantidadReserva" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MaxHorasReserva" class="form-label">Horas máximas de reserva</label>
+        <input asp-for="MaxHorasReserva" type="number" min="1" class="form-control" />
+        <span asp-validation-for="MaxHorasReserva" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Atributos" class="form-label">Atributos (JSON)</label>
+        <textarea asp-for="Atributos" class="form-control" rows="6" spellcheck="false"></textarea>
+        <span asp-validation-for="Atributos" class="text-danger"></span>
+    </div>
+
+    <div id="estadoJson" class="alert py-2" role="status" aria-live="polite"></div>
+    <pre id="vistaPreviaJson" class="bg-body-tertiary border rounded p-3"></pre>
+
+    <button type="submit" class="btn btn-primary">@(esEdicion ? "Guardar cambios" : "Crear producto")</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            const editor = $("#Atributos");
+            const estado = $("#estadoJson");
+            const vistaPrevia = $("#vistaPreviaJson");
+
+            function actualizarVistaPrevia() {
+                const texto = editor.val().trim();
+
+                if (!texto) {
+                    estado.removeClass("alert-danger").addClass("alert-success").text("JSON válido");
+                    vistaPrevia.text("{}");
+                    return;
+                }
+
+                try {
+                    const valor = JSON.parse(texto);
+                    if (valor === null || Array.isArray(valor) || typeof valor !== "object") {
+                        throw new Error("Se requiere un objeto JSON.");
+                    }
+
+                    estado.removeClass("alert-danger").addClass("alert-success").text("JSON válido");
+                    vistaPrevia.text(JSON.stringify(valor, null, 2));
+                } catch {
+                    estado.removeClass("alert-success").addClass("alert-danger").text("JSON no válido: se requiere un objeto.");
+                    vistaPrevia.text(texto);
+                }
+            }
+
+            editor.on("input", actualizarVistaPrevia);
+            actualizarVistaPrevia();
+        });
+    </script>
+}

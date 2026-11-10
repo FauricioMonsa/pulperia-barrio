@@ -1,0 +1,48 @@
+@model PulperiaBarrio.Models.ClienteReservasViewModel
+
+<section class="mt-4">
+    <h2 class="h4">Reservas de @Model.NombreCliente</h2>
+    @if (Model.Reservas.Count == 0)
+    {
+        <div class="alert alert-info" role="status">Este cliente no tiene reservas</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Sucursal</th>
+                        <th>Cantidad</th>
+                        <th>Fecha de reserva (Costa Rica)</th>
+                        <th>Vencimiento (Costa Rica)</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reserva in Model.Reservas)
+                    {
+                        var resultado = reserva.Resultado.ToUpperInvariant();
+                        var color = resultado switch
+                        {
+                            "RESERVADO" => "primary",
+                            "COMPRADO" => "success",
+                            "CANCELADO" => "danger",
+                            _ => "secondary"
+                        };
+                        <tr>
+                            <td>@reserva.Producto</td>
+                            <td>@reserva.Sucursal</td>
+                            <td>@reserva.Cantidad</td>
+                            <td>@reserva.FechaReserva.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@reserva.FechaVencimiento.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><span class="badge bg-@color">@reserva.Resultado</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <p class="form-text">Las fechas se muestran en hora de Costa Rica (UTC-6).</p>
+    }
+</section>

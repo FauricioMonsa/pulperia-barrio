@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "Mi Pulpería de Barrio";
+}
+
+<section class="text-center py-4">
+    <h1 class="display-5 fw-bold">Mi Pulpería de Barrio</h1>
+    <p class="lead text-muted">Sistema de inventarios y reservas</p>
+</section>
+
+<section class="mb-5">
+    <h2 class="h3 mb-3">Mantenimientos</h2>
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5">Sucursales</h3>
+                    <p class="card-text">Administra las ubicaciones y el estado de las sucursales.</p>
+                    <a class="btn btn-primary mt-auto" asp-controller="Sucursales" asp-action="Index">Ir a Sucursales</a>
+                </div>
+            </article>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5">Clientes</h3>
+                    <p class="card-text">Registra y actualiza la información de tus clientes.</p>
+                    <a class="btn btn-primary mt-auto" asp-controller="Clientes" asp-action="Index">Ir a Clientes</a>
+                </div>
+            </article>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5">Productos</h3>
+                    <p class="card-text">Mantén el catálogo, precios y atributos de los productos.</p>
+                    <a class="btn btn-primary mt-auto" asp-controller="Productos" asp-action="Index">Ir a Productos</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="mb-4">
+    <h2 class="h3 mb-3">Consultas</h2>
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5">Reservas por cliente</h3>
+                    <p class="card-text">Consulta las reservas asociadas a cada cliente.</p>
+                    <a class="btn btn-outline-primary mt-auto" asp-controller="Consultas" asp-action="Clientes">Ver reservas</a>
+                </div>
+            </article>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5">Artículos e inventario</h3>
+                    <p class="card-text">Revisa productos y existencias disponibles por sucursal.</p>
+                    <a class="btn btn-outline-primary mt-auto" asp-controller="Consultas" asp-action="Articulos">Ver artículos e inventario</a>
+                </div>
+            </article>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5">Consulta de sucursales</h3>
+                    <p class="card-text">Consulta las ubicaciones y el estado de cada sucursal.</p>
+                    <a class="btn btn-outline-primary mt-auto" asp-controller="Consultas" asp-action="Sucursales">Ver sucursales</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>

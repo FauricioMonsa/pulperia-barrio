@@ -1,0 +1,39 @@
+@model PulperiaBarrio.Models.Sucursal
+
+@{
+    var esEdicion = Model.Id != 0;
+    ViewData["Title"] = esEdicion ? "Editar sucursal" : "Crear sucursal";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Guardar" method="post">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    <div class="mb-3">
+        <label asp-for="Nombre" class="form-label">Nombre</label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Ubicacion" class="form-label">Ubicación</label>
+        <input asp-for="Ubicacion" class="form-control" />
+        <span asp-validation-for="Ubicacion" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Activa" class="form-check-input" />
+        <label asp-for="Activa" class="form-check-label">Activa</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">@(esEdicion ? "Guardar cambios" : "Crear sucursal")</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,85 @@
+@model IEnumerable<PulperiaBarrio.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Reservas por cliente";
+}
+
+<h1>Reservas por cliente</h1>
+
+<form asp-action="Clientes" method="get" class="row g-2 mb-3">
+    <div class="col-sm-8 col-md-6">
+        <label for="busqueda" class="visually-hidden">Buscar cliente por nombre</label>
+        <input id="busqueda" name="busqueda" value="@ViewData["Busqueda"]"
+               class="form-control" placeholder="Buscar cliente por nombre" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+        <a class="btn btn-outline-secondary" asp-action="Clientes">Limpiar</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th class="text-end">Reservas</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cliente in Model)
+            {
+                <tr class="js-cliente-reservas" data-url="@Url.Action("DetalleReservas", new { clienteId = cliente.Id })">
+                    <td>@cliente.Nombre</td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-primary js-ver-reservas">
+                            Ver reservas
+                        </button>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="2" class="text-center text-muted">No se encontraron clientes.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="detalleReservas" aria-live="polite"></div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            const detalle = $("#detalleReservas");
+
+            function cargarReservas(url) {
+                detalle.text("Cargando reservas...");
+                $.get(url)
+                    .done(function (html) {
+                        detalle.html(html);
+                    })
+                    .fail(function () {
+                        detalle.empty().append(
+                            $("<div>", {
+                                class: "alert alert-danger",
+                                role: "alert",
+                                text: "No se pudieron cargar las reservas."
+                            })
+                        );
+                    });
+            }
+
+            $("tbody").on("dblclick", ".js-cliente-reservas", function () {
+                cargarReservas($(this).data("url"));
+            });
+
+            $("tbody").on("click", ".js-ver-reservas", function (evento) {
+                evento.stopPropagation();
+                cargarReservas($(this).closest(".js-cliente-reservas").data("url"));
+            });
+        });
+    </script>
+}

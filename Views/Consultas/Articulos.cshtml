@@ -1,0 +1,72 @@
+@using System.Globalization
+@model IEnumerable<PulperiaBarrio.Models.ArticuloConsultaViewModel>
+
+@{
+    ViewData["Title"] = "Artículos e inventario";
+    var formatoColones = (NumberFormatInfo)ViewData["FormatoColones"]!;
+}
+
+<h1>Artículos e inventario</h1>
+
+<form asp-action="Articulos" method="get" class="row g-2 mb-4">
+    <div class="col-sm-8 col-md-6">
+        <label for="busqueda" class="visually-hidden">Buscar producto por nombre</label>
+        <input id="busqueda" name="busqueda" value="@ViewData["Busqueda"]"
+               class="form-control" placeholder="Buscar producto por nombre" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+        <a class="btn btn-outline-secondary" asp-action="Articulos">Limpiar</a>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No se encontraron artículos.</div>
+}
+else
+{
+    @foreach (var articulo in Model)
+    {
+        <article class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title h4">@articulo.Nombre</h2>
+                <p class="mb-1"><strong>Categoría:</strong> @articulo.Categoria</p>
+                <p class="mb-3"><strong>Precio:</strong> @($"₡{articulo.Precio.ToString("#,##0.00", formatoColones)}")</p>
+
+                <h3 class="h6">Atributos (JSON)</h3>
+                <pre class="bg-body-tertiary border rounded p-3">@((articulo.Atributos ?? "{}"))</pre>
+
+                <h3 class="h6 mt-3">Existencias por sucursal</h3>
+                @if (articulo.Existencias.Count == 0)
+                {
+                    <p class="text-muted">No hay existencias registradas por sucursal.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Sucursal</th>
+                                    <th>Cantidad disponible</th>
+                                    <th>Cantidad reservada</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var existencia in articulo.Existencias)
+                                {
+                                    <tr>
+                                        <td>@existencia.NombreSucursal</td>
+                                        <td>@existencia.CantidadDisponible</td>
+                                        <td>@existencia.CantidadReservada</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </article>
+    }
+}

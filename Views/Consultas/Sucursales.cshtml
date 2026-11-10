@@ -1,0 +1,39 @@
+@model IEnumerable<PulperiaBarrio.Models.Sucursal>
+
+@{
+    ViewData["Title"] = "Consulta de sucursales";
+}
+
+<h1>Consulta de sucursales</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Ubicación</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sucursal in Model)
+            {
+                <tr>
+                    <td>@sucursal.Nombre</td>
+                    <td>@sucursal.Ubicacion</td>
+                    <td>
+                        <span class="badge bg-@(sucursal.Activa ? "success" : "secondary")">
+                            @(sucursal.Activa ? "Activa" : "Inactiva")
+                        </span>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No hay sucursales registradas.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

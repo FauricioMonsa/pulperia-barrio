@@ -1,0 +1,126 @@
+@using System.Globalization
+@model IEnumerable<PulperiaBarrio.Models.Producto>
+
+@{
+    ViewData["Title"] = "Productos";
+    var formatoColones = new NumberFormatInfo
+    {
+        NumberGroupSeparator = " ",
+        NumberDecimalSeparator = ",",
+        NumberGroupSizes = [3]
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Productos</h1>
+    <a class="btn btn-primary" asp-action="Crear">Nuevo producto</a>
+</div>
+
+<div id="mensaje" class="alert d-none" role="alert" aria-live="polite"></div>
+
+@if (TempData["Mensaje"] is string mensaje)
+{
+    <div class="alert alert-success" role="alert">@mensaje</div>
+}
+
+<form asp-action="Index" method="get" class="row g-2 mb-3">
+    <div class="col-sm-8 col-md-6">
+        <label for="busqueda" class="visually-hidden">Buscar por nombre</label>
+        <input id="busqueda" name="busqueda" value="@ViewData["Busqueda"]"
+               class="form-control" placeholder="Buscar por nombre" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Limpiar</a>
+    </div>
+</form>
+
+<form id="tokenAntiforgery" class="d-none">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Máximo por cliente</th>
+                <th>Horas de reserva</th>
+                <th class="text-end">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in Model)
+            {
+                <tr id="producto-@producto.Id">
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Categoria</td>
+                    <td>@($"₡{producto.Precio.ToString("#,##0.00", formatoColones)}")</td>
+                    <td>@producto.MaxCantidadReserva</td>
+                    <td>@producto.MaxHorasReserva</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary"
+                           asp-action="Editar" asp-route-id="@producto.Id">Editar</a>
+                        <button type="button" class="btn btn-sm btn-outline-danger js-eliminar-producto"
+                                data-id="@producto.Id" data-nombre="@producto.Nombre">Eliminar</button>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No se encontraron productos.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            const mensaje = $("#mensaje");
+
+            $(".js-eliminar-producto").on("click", function () {
+                const boton = $(this);
+                const id = boton.data("id");
+                const nombre = boton.data("nombre");
+
+                if (!window.confirm(`¿Está seguro de eliminar el producto "${nombre}"?`)) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("Eliminar", "Productos")',
+                    method: "POST",
+                    data: {
+                        id: id,
+                        __RequestVerificationToken: $("#tokenAntiforgery input[name='__RequestVerificationToken']").val()
+                    }
+                }).done(function (respuesta) {
+                    $(`#producto-${id}`).remove();
+                    if ($("tbody tr").length === 0) {
+                        $("tbody").append(
+                            $("<tr>").append(
+                                $("<td>", {
+                                    colspan: 6,
+                                    class: "text-center text-muted",
+                                    text: "No se encontraron productos."
+                                })
+                            )
+                        );
+                    }
+                    mensaje.removeClass("d-none alert-danger").addClass("alert-success")
+                        .text(respuesta.mensaje);
+                }).fail(function (respuesta) {
+                    const texto = respuesta.responseJSON?.mensaje
+                        || "No se pudo eliminar el producto.";
+                    mensaje.removeClass("d-none alert-success").addClass("alert-danger")
+                        .text(texto);
+                });
+            });
+        });
+    </script>
+}
