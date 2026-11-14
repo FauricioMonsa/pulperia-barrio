@@ -49,7 +49,8 @@ public class SucursalesController(PulperiaBarrioContext context) : Controller
             return View("Formulario", sucursal);
         }
 
-        if (sucursal.Id == 0)
+        var esNueva = sucursal.Id == 0;
+        if (esNueva)
         {
             context.Sucursales.Add(sucursal);
         }
@@ -76,9 +77,9 @@ public class SucursalesController(PulperiaBarrioContext context) : Controller
             return View("Formulario", sucursal);
         }
 
-        TempData["Mensaje"] = sucursal.Id == 0
-            ? "La sucursal se creó correctamente."
-            : "La sucursal se actualizó correctamente.";
+        TempData["Mensaje"] = esNueva
+            ? "La sucursal se creó correctamente"
+            : "La sucursal se actualizó correctamente";
         return RedirectToAction(nameof(Index));
     }
 
